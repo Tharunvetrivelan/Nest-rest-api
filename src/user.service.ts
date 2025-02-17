@@ -24,13 +24,11 @@ export class UserService {
     //     return this.userModel.findOne({username});
     //  }
 
-     async validateUser(username:string, password:string): Promise<User | null>{
-        const cuser = await this.userModel.findOne({username});
-        const hashedpass = await bcrypt.hash(password,10);
-        if(cuser == null){
-            return null;
-        }
+     async validateUser(name:string, password:string): Promise<User | null>{
+        
+        const cuser = await this.userModel.findOne({name}); 
         if(cuser && await bcrypt.compare(password,cuser.password)){
+            console.log("User returned")
             return cuser;
         }
         return null;

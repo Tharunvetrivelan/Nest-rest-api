@@ -13,7 +13,7 @@ export class SignupController {
     @Post()
     async createSignup(@Res() response : any, @Body() createSignupDto:CreateSignupDto){
         try{
-            const newSignup =  this.signupService.createSignup(createSignupDto);
+            const newSignup =  await this.signupService.createSignup(createSignupDto);
             return response.status(HttpStatus.CREATED).json({
                 message: 'Account has been created successfully',
                 newSignup

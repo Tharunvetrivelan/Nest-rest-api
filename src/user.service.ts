@@ -14,7 +14,7 @@ export class UserService {
     constructor(@InjectModel(User.name) private userModel:Model<ISignup>){
     }
     // static userService = new UserService();
-    async createSignup(createSignupDto:CreateSignupDto):Promise<ISignup> {
+    async createSignup(createSignupDto:CreateSignupDto) {
         createSignupDto.password = await bcrypt.hash(createSignupDto.password,10);
         const newSignup = await new this.userModel(createSignupDto); 
         return newSignup.save();

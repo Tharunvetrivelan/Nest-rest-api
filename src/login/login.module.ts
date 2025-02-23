@@ -15,7 +15,7 @@ import { JwtModule } from '@nestjs/jwt';
     secret: 'secretKey', // Ensure this matches your strategy
     signOptions: { expiresIn: '1h' }, 
   })],
-  providers: [UserService],
+  providers: [UserService], 
   controllers: [LoginController]
 })
 export class LoginModule {}

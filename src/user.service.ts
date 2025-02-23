@@ -1,6 +1,5 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Model, NullExpression } from 'mongoose';
-import { ILogin } from 'src/interface/login.interface';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Model} from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ISignup } from 'src/interface/signup.interface';
 import CreateSignupDto from './signup/create-signup.dto';
@@ -15,9 +14,14 @@ export class UserService {
     }
         // static userService = new UserService();
     async createSignup(createSignupDto:CreateSignupDto) {
-        createSignupDto.password = await bcrypt.hash(createSignupDto.password,10);
+        const { name } = createSignupDto;
+        const emailInUse = await this.userModel.findOne({name}) as User;
+        if(emailInUse){
+            throw new BadRequestException("Email already in use");
+        }
+        else{createSignupDto.password = await bcrypt.hash(createSignupDto.password,10);
         const newSignup = await new this.userModel(createSignupDto); 
-        return newSignup.save();
+        return newSignup.save();}
      }
 
      async validateUser(username:string, password:string): Promise<User | null>{

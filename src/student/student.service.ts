@@ -11,6 +11,11 @@ export class StudentService {
     constructor(@InjectModel(Student.name) private studentModel:Model<IStudent>){ }
 
     async createStudent(createStudentDto: CreateStudentDto):Promise<IStudent>{
+        const existingStudent = await this.studentModel.findOne({ rollNumber: createStudentDto.roleNumber }).exec();
+
+    if (existingStudent) {
+        throw new NotFoundException(`Roll number ${createStudentDto.roleNumber} already exists. Please enter another roll number.`);
+    }
         const newStudent = await new this.studentModel(createStudentDto);
         return newStudent.save();
 }

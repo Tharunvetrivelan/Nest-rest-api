@@ -14,11 +14,6 @@ constructor(private readonly loginService:UserService,
 ){}
 @Post()
    async login(@Res() response : any,@Body() loginDto: LoginDto):Promise<any>{
-        // const isvalid = await this.loginService.validateUser(loginDto.name,loginDto.password);
-        // if(isvalid){
-        //     console.log("Success")
-        //     return response.status(HttpStatus.OK).json({message:"Login Successfull"})    
-        // }
         const user = await this.loginService.validateUser(loginDto.name,loginDto.password); 
         
         if(user){
@@ -29,8 +24,6 @@ constructor(private readonly loginService:UserService,
                 token,
             });
         }
-       
-      
     return response.status(HttpStatus.UNAUTHORIZED).json({
         status:"Sorry , OOPS",
     })     

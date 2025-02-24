@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, Query } from '@nestjs/common';
 import CreateStudentDto from '../student/create-student.dto';
 import {UpdateStudentDto} from '../student/update-student.dto'
 import { StudentService } from '../student/student.service';
@@ -23,8 +23,7 @@ export class StudentController {
 }
 
 @Put('/:id')
-async updateStudent(@Res() response : any,@Param('id') studentId: string,
-@Body() updateStudentDto: UpdateStudentDto) {
+async updateStudent(@Res() response : any,@Param('id') studentId: string,@Body() updateStudentDto: UpdateStudentDto) {
   try {
    const existingStudent = await this.studentService.updateStudent(studentId, updateStudentDto);
   return response.status(HttpStatus.OK).json({
@@ -36,15 +35,19 @@ async updateStudent(@Res() response : any,@Param('id') studentId: string,
 }
 
 @Get()
-async getStudents(@Res() response :any) {
-try {
-  const studentData = await this.studentService.getAllStudents();
-  return response.status(HttpStatus.OK).json({
-  message: 'All students data found successfully',studentData,});
- } catch (err) {
-  return response.status(err.status).json(err.response);
- }
+async getStudents(@Res() response: any, @Query('skip') skip = 0, @Query('limit') limit = 10) {
+    try {
+        const result = await this.studentService.getAllStudents(Number(skip), Number(limit));
+        return response.status(HttpStatus.OK).json({
+            message: 'All students data found successfully',
+            studentData: result.studentData,
+            totalStudents: result.totalStudents,
+        });
+    } catch (err) {
+        return response.status(err.status).json(err.response);
+    }
 }
+
 
 @Get('/:id')
 async getStudent(@Res() response : any, @Param('id') studentId: string) {

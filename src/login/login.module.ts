@@ -5,9 +5,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/schema/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { Document } from 'mongoose';
-// import { LocalStrategy } from './local.strategy';
-// import { SignupModule } from 'src/signup/signup.module';
-// import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({

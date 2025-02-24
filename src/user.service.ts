@@ -28,7 +28,7 @@ export class UserService {
         
         const cuser = await this.userModel.findOne({ name: username }) as User; 
         if(cuser && await bcrypt.compare(password,cuser.password)){
-            console.log("User returned")
+            // console.log("User returned")
             
             return cuser;
         }

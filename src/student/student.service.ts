@@ -29,14 +29,17 @@ async updateStudent(studentId: string, updateStudentDto: UpdateStudentDto): Prom
     return existingStudent;
 }
 
-async getAllStudents(): Promise<IStudent[]> {
-    const studentData = await this.studentModel.find();
+async getAllStudents(skip: number, limit: number): Promise<{ studentData: IStudent[], totalStudents: number }> {
+    const studentData = await this.studentModel.find().skip(skip).limit(limit);
+    const totalStudents = await this.studentModel.countDocuments();
 
-    if(!studentData || studentData.length == 0){
+    if (!studentData || studentData.length === 0) {
         throw new NotFoundException('Students data not found!');
     }
-    return studentData;  
+
+    return { studentData, totalStudents };
 }
+
 
 async getStudent(studentId: string): Promise<IStudent>{
     const existingStudent = await this.studentModel.findById(studentId).exec();

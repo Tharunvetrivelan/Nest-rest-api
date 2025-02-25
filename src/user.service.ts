@@ -35,5 +35,19 @@ export class UserService {
         return null;
      }
     
+     async findUserByEmail(email: string): Promise<User | null> {
+        const user = await this.userModel.findOne({ name : email }); 
+        return user; 
+      }
+      async updatePassword(email: string, newPassword: string): Promise<User|null> {
+        const saltRounds = 10; 
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds); 
+    const user = await this.userModel.findOneAndUpdate(
+      { name:email }, 
+      { password: hashedPassword }, 
+      { new: true } 
+    );
+    return user;
+      }
      
 }

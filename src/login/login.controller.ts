@@ -6,7 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 import LoginDto from './login.dto';
 import { JwtService } from '@nestjs/jwt';
 import ResetPassword from './resetpassword.dto';
-// import { LocalStrategy } from './local.strategy';
+
 
 @Controller('/login') 
 export class LoginController {

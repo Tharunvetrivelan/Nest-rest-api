@@ -1,11 +1,8 @@
 import { Controller, Get, HttpStatus, Param, Res,Request, Post, UseGuards,Logger, Req, Body, Put  } from '@nestjs/common';
 import { UserService } from '../user.service';
-import { response } from 'express';
-import { User } from 'src/schema/user.schema';
-import { AuthGuard } from '@nestjs/passport';
 import LoginDto from './login.dto';
 import { JwtService } from '@nestjs/jwt';
-import ResetPassword from './resetpassword.dto';
+
 
 
 @Controller('/login') 

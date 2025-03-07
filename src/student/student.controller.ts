@@ -3,7 +3,7 @@ import { JwtAuthGuard } from 'src/login/auth.guard';
 import CreateStudentDto from '../student/create-student.dto';
 import { UpdateStudentDto } from '../student/update-student.dto';
 import { StudentService } from '../student/student.service';
-import { Response } from 'express'; // Type the response properly
+import { Response } from 'express';
 
 @Controller('/student')
 export class StudentController {
@@ -51,9 +51,18 @@ export class StudentController {
     @Res() response: Response,
     @Query('skip') skip = 0,
     @Query('limit') limit = 10,
+    @Query('sortField') sortField?: 'roleNumber' | 'name',
+    @Query('sortOrder') sortOrder?: 'asc' | 'desc',
+    @Query('search') search?: string, // New search parameter
   ) {
     try {
-      const result = await this.studentService.getAllStudents(Number(skip), Number(limit));
+      const result = await this.studentService.getAllStudents(
+        Number(skip),
+        Number(limit),
+        sortField,
+        sortOrder,
+        search,
+      );
       return response.status(HttpStatus.OK).json({
         message: 'All students data found successfully',
         studentData: result.studentData,
@@ -68,10 +77,10 @@ export class StudentController {
   }
 
   @Get('validate')
-  @UseGuards(JwtAuthGuard) 
+  @UseGuards(JwtAuthGuard)
   validateToken() {
-    return { isValid: true }; 
-  } 
+    return { isValid: true };
+  }
 
   @Get('/:id')
   async getStudent(@Res() response: Response, @Param('id') studentId: string) {
@@ -104,5 +113,4 @@ export class StudentController {
       });
     }
   }
-
 }

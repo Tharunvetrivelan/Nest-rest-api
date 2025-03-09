@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import {IsEmail, IsStrongPassword} from "class-validator";
 import { Document } from 'mongoose';
-@Schema()
+@Schema({ timestamps: true })
 export class User extends Document{ //{required:true}
     @Prop()
     @IsEmail()

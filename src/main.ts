@@ -6,7 +6,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({ 
-    origin: 'http://localhost:5173', 
+    origin: [
+      'http://localhost:5173',
+      'http://tharunvetri-bucket.s3-website.ap-south-1.amazonaws.com', 
+    ], 
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONAL',
     allowedHeaders: 'Content-Type, Authorization',
   });

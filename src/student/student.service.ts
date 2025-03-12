@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, PipelineStage } from 'mongoose';
+import { isValidObjectId, Model, PipelineStage } from 'mongoose';
 import CreateStudentDto from '../student/create-student.dto';
 import { UpdateStudentDto } from '../student/update-student.dto';
 import { IStudent } from '../interface/student.interface';
@@ -20,7 +20,11 @@ export class StudentService {
   }
 
   async updateStudent(studentId: string, updateStudentDto: UpdateStudentDto): Promise<IStudent> {
-    const existingStudent = await this.studentModel.findByIdAndUpdate(studentId, updateStudentDto, { new: true });
+    if (!isValidObjectId(studentId)) {
+      throw new BadRequestException(`Invalid student ID: ${studentId}`);
+    }
+    const existingStudent = await this.studentModel.findOneAndUpdate(
+      {_id:studentId,deletedAt:null}, {...updateStudentDto,lastModified:new Date()}, { new: true });
     if (!existingStudent) {
       throw new NotFoundException(`Student #${studentId} not found`);
     }
@@ -49,8 +53,10 @@ export class StudentService {
           },
         }]
       : [];
-  
+    
+    const activeStage: PipelineStage[] = [{$match:{deletedAt:null}}]
     const result = await this.studentModel.aggregate([
+      ...activeStage,
       ...searchStage,
       ...sortStage,
       {
@@ -83,7 +89,10 @@ export class StudentService {
     };
   }
   async getStudent(studentId: string): Promise<IStudent> {
-    const existingStudent = await this.studentModel.findById(studentId).exec();
+    if(!isValidObjectId(studentId)){
+      throw new BadRequestException(`Invalid student ID:${studentId}`);
+    }
+    const existingStudent = await this.studentModel.findOne({_id:studentId,deletedAt:null}).exec();
     if (!existingStudent) {
       throw new NotFoundException(`Student #${studentId} not found`);
     }
@@ -91,7 +100,7 @@ export class StudentService {
   }
 
   async deleteStudent(studentId: string): Promise<IStudent> {
-    const deleteStudent = await this.studentModel.findByIdAndDelete(studentId);
+    const deleteStudent = await this.studentModel.findByIdAndUpdate({_id:studentId,deletedAt:null},{deletedAt: new Date(),lastModified:new Date()});
     if (!deleteStudent) {
       throw new NotFoundException(`Student #${studentId} not found`);
     }

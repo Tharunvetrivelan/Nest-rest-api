@@ -26,6 +26,7 @@ export class StudentController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put('/:id')
   async updateStudent(
     @Res() response: Response,
@@ -46,6 +47,7 @@ export class StudentController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getStudents(
     @Res() response: Response,
@@ -53,7 +55,7 @@ export class StudentController {
     @Query('limit') limit = 10,
     @Query('sortField') sortField?: 'roleNumber' | 'name',
     @Query('sortOrder') sortOrder?: 'asc' | 'desc',
-    @Query('search') search?: string, // New search parameter
+    @Query('search') search?: string,
   ) {
     try {
       const result = await this.studentService.getAllStudents(
@@ -82,6 +84,7 @@ export class StudentController {
     return { isValid: true };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/:id')
   async getStudent(@Res() response: Response, @Param('id') studentId: string) {
     try {
@@ -97,18 +100,19 @@ export class StudentController {
       });
     }
   }
-
+  
+  @UseGuards(JwtAuthGuard)
   @Delete('/:id')
   async deleteStudent(@Res() response: Response, @Param('id') studentId: string) {
     try {
-      const deletedStudent = await this.studentService.deleteStudent(studentId);
+      const softDeletedStudent = await this.studentService.deleteStudent(studentId);
       return response.status(HttpStatus.OK).json({
-        message: 'Student deleted successfully',
-        deletedStudent,
+        message: 'Student soft-deleted successfully',
+        softDeletedStudent,
       });
     } catch (err) {
       return response.status(err.status || HttpStatus.BAD_REQUEST).json({
-        message: err.message || 'Error: Student not deleted!',
+        message: err.message || 'Error: Student not soft-deleted!',
         error: 'Bad Request',
       });
     }

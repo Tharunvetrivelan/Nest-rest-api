@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Param, Res,Request, Post, UseGuards,Logger, Req, Body, Put  } from '@nestjs/common';
+import { Controller, HttpStatus, Res, Post,Body, Put  } from '@nestjs/common';
 import { UserService } from '../user.service';
 import LoginDto from './login.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -22,9 +22,11 @@ constructor(private readonly loginService:UserService,
                 token,
             });
         }
-    return response.status(HttpStatus.UNAUTHORIZED).json({
-        status:"Sorry , OOPS",
-    })     
+        
+   else{ 
+    
+    return response.status(HttpStatus.BAD_REQUEST).json({status:"Invalid username or password",})
+  }     
     }
 
     @Post('/forgot') 

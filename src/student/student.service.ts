@@ -99,6 +99,48 @@ export class StudentService {
     return existingStudent;
   }
 
+  async getPaginatedStudents(
+    skip: number,
+    limit: number,
+  ): Promise<{ studentData: IStudent[]; totalStudents: number }> {
+    console.log('getPaginatedStudents called with:', { skip, limit });
+
+    const activeStage: PipelineStage[] = [{ $match: { deletedAt: null } }];
+
+    const result = await this.studentModel.aggregate([
+      ...activeStage,
+      {
+        $facet: {
+          studentData: [
+            { $skip: skip },
+            { $limit: limit },
+          ],
+          totalStudents: [
+            { $count: 'count' },
+          ],
+        },
+      },
+      {
+        $project: {
+          studentData: 1,
+          totalStudents: { $arrayElemAt: ['$totalStudents.count', 0] },
+        },
+      },
+    ]);
+
+    if (!result.length || !result[0].studentData.length) {
+      return {
+        studentData: [],
+        totalStudents: 0,
+      };
+    }
+
+    return {
+      studentData: result[0].studentData,
+      totalStudents: result[0].totalStudents || 0,
+    };
+  }
+
   async deleteStudent(studentId: string): Promise<IStudent> {
     const deleteStudent = await this.studentModel.findByIdAndUpdate({_id:studentId,deletedAt:null},{deletedAt: new Date(),lastModified:new Date()});
     if (!deleteStudent) {

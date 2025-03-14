@@ -78,6 +78,31 @@ export class StudentController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('/paginated')
+  async getPaginatedStudents(
+    @Res() response: Response,
+    @Query('page') page = 0,
+    @Query('limit') limit = 20,
+  ) {
+    try {
+      const result = await this.studentService.getPaginatedStudents(
+        Number(page) * Number(limit),
+        Number(limit),
+      );
+      return response.status(HttpStatus.OK).json({
+        message: 'Paginated students data found successfully',
+        studentData: result.studentData,
+        totalStudents: result.totalStudents,
+      });
+    } catch (err) {
+      return response.status(err.status || HttpStatus.BAD_REQUEST).json({
+        message: err.message || 'Error: Could not fetch paginated students!',
+        error: 'Bad Request',
+      });
+    }
+  }
+
   @Get('validate')
   @UseGuards(JwtAuthGuard)
   validateToken() {
